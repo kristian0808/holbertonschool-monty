@@ -11,10 +11,10 @@ int main(int argc, char *argv[])
     unsigned int line = 1;
     FILE *file_exp = fopen(argv[1], "r");
     char *buffer, *token;
-    stack_t bufsize = 100;
-    stack_t characters;
+    size_t bufsize = 32;
+    size_t characters;
 
-    buffer = (char *)malloc(bufsize * sizeof(char));
+    buffer = (char *)malloc(bufsize * (sizeof(char)));
 
     if (file_exp == NULL)
     {
@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
         while (token != NULL){
             if (strcmp(token, "push") == 0)
             {
-                number = atoi(strtok(NULL, ""));
+                num = atoi(strtok(NULL, ""));
+                printf("Hello");
             }
 
             token = strtok(NULL, " ");
