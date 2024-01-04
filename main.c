@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     FILE *file_exp = fopen(argv[1], "r");
     char *buffer, *token;
     size_t bufsize = 32;
-    size_t characters;
+    int characters;
 
     buffer = (char *)malloc(bufsize * (sizeof(char)));
 
@@ -23,20 +23,19 @@ int main(int argc, char *argv[])
     else
         printf("success");
 
-    while ((characters = getline(&buffer,&bufsize,stdin)) != 1)
+    while ((characters = getline(&buffer,&bufsize,file_exp)) != -1)
     {
-        token  = strtok(buffer, "\t\n ");
-
+        token  = strtok(buffer, "\t\n");
+        printf("%s\n", token);
         while (token != NULL){
             if (strcmp(token, "push") == 0)
             {
                 num = atoi(strtok(NULL, ""));
-                printf("Hello");
             }
 
             token = strtok(NULL, " ");
         }
-        line++;
+        line ++;
     }
     
     // stack_t *new_node = NULL;
