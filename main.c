@@ -1,93 +1,50 @@
 #include "monty.h"
-
 /**
- * _push - pushes an element onto the stack
- * @stack: A pointer to a pointer to the top of the stack
- * @line_number: The current line number in the script
+ * main - Entry point of the program.
+ * @argc: The number of command-line arguments.
+ * @argv: An array containing the command-line arguments as strings.
+ * Return: 0 upon success, other values for errors.
  */
-void _push(stack_t **stack, unsigned int line_number)
+int main(int argc, char *argv[])
 {
-	char *arig = strtok(NULL, " \t\n");
-
-	if (arig)
+	if (argc != 2)
 	{
-		int i = 0;
+		fprintf(stderr, "USAGE: monty file\n");
+		exit(EXIT_FAILURE);
+	}
+	char *filename = argv[1];
+	FILE *script_file = fopen(filename, "r");
 
-		if (arig[0] == '-')
-		{
-			i = 1;
-		}
-		while (arig[i] != '\0')
-		{
-			if (!isdigit(arig[i]))
-			{
-				fprintf(stderr, "L%u: usage: push integer\n", line_number);
-				exit(EXIT_FAILURE);
-			}
-			i++;
-		}
-		int value = atoi(arig);
-		stack_t *new_node = malloc(sizeof(stack_t));
+	if (script_file == NULL)
+	{
+		fprintf(stderr, "Error: Can't open file %s\n", filename);
+		exit(EXIT_FAILURE);
+	}
+	stack_t *stack = NULL;
+	char *line = NULL;
+	size_t len = 0;
+	unsigned int line_number = 0;
 
-		if (!new_node)
+	while (getline(&line, &len, script_file) != -1)
+	{
+		line_number++;
+		char *token = strtok(line, " \t\n");
+
+		if (token == NULL || token[0] == '#')
+			continue;
+		void (*op_func)(stack_t **, unsigned int) = get_op(token);
+
+		if (op_func == NULL)
 		{
-			fprintf(stderr, "Error: malloc failed\n");
+			fprintf(stderr, "L%u: unknown instruction %s\n", line_number, token);
+			free(line), fclose(script_file);
+			free_stack(&stack);
 			exit(EXIT_FAILURE);
 		}
-		new_node->n = value;
-		new_node->prev = NULL;
-		new_node->next = *stack;
-		if (*stack)
-			(*stack)->prev = new_node;
-		*stack = new_node;
+		op_func(&stack, line_number);
 	}
-	else
-	{
-		fprintf(stderr, "L%u: usage: push integer\n", line_number);
-		exit(EXIT_FAILURE);
-	}
-}
-/**
- * _pall - prints all the values on the stack, starting from the top
- * @stack: A pointer to a pointer to the top of the stack
- * @line_number: The current line number in the script
- */
-void _pall(stack_t **stack, unsigned int line_number)
-{
-	(void)line_number;
-	stack_t *current = *stack;
-
-	while (current != NULL)
-	{
-		printf("%d\n", current->n);
-		current = current->next;
-	}
-}
-/**
- * free_stack - frees all the elements of a stack_t stack
- * @stack: A pointer to a pointer to the top of the stack
- */
-void free_stack(stack_t **stack)
-{
-	while (*stack)
-	{
-		stack_t *temp = (*stack)->next;
-
-		free(*stack);
-		*stack = temp;
-	}
-}
-/**
- * _pint - prints the value at the top of the stack
- * @stack: A pointer to a pointer to the top of the stack
- * @line_number: The current line number in the script
- */
-void _pint(stack_t **stack, unsigned int line_number)
-{
-	if (*stack == NULL)
-	{
-		fprintf(stderr, "L%u: can't pint, stack empty\n", line_number);
-		exit(EXIT_FAILURE);
-	}
-	printf("%d\n", (*stack)->n);
+	free(line);
+	fclose(script_file);
+	free_stack(&stack);
+	return (EXIT_SUCCESS);
 }
