@@ -44,17 +44,5 @@ void _pop(stack_t **top, unsigned int line);
 void _free(stack_t *top);
 void _swap(stack_t **top, unsigned int line);
 void _add(stack_t **top, unsigned int line);
-void _sub(stack_t **top, unsigned int line);
-void _div(stack_t **top, unsigned int line);
-void _mul(stack_t **top, unsigned int line);
-void _mod(stack_t **top, unsigned int line);
-void _rotl(stack_t **top, unsigned int line);
-void _rotr(stack_t **top, unsigned int line);
-void _nop(stack_t **top, unsigned int line);
-void _pchar(stack_t **top, unsigned int line);
-void _pstr(stack_t **top, unsigned int line);
-void (*get_op_code(char *token, unsigned int line))(stack_t **, unsigned int);
-void invalid_instruction_error(char *token, unsigned int line);
-void file_error(char **argv);
 void usage_error(void);
 #endif
