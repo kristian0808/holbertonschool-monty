@@ -44,5 +44,10 @@ void _pop(stack_t **top, unsigned int line);
 void _free(stack_t *top);
 void _swap(stack_t **top, unsigned int line);
 void _add(stack_t **top, unsigned int line);
+void invalid_instruction_error(char *token, unsigned int line);
+void (*get_op_code(char *token, unsigned int line))(stack_t **, unsigned int);
+void file_error(char **argv);
 void usage_error(void);
+
+extern int num;
 #endif
