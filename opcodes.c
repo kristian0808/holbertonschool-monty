@@ -77,6 +77,28 @@ void _pop(stack_t **top, unsigned int line)
 	free(*top);
 	*top = temp;
 }
+
+/**
+ * _add - Function that adds values of two nodes
+ * @top: First node
+ * @line: second operand int
+ */
+void _add(stack_t **top, unsigned int line)
+{
+        stack_t *temp;
+
+        if (*top == NULL || (*top)->next == NULL)
+        {
+                fprintf(stderr, "L%u: can't add, stack too short\n", line);
+                exit(EXIT_FAILURE);
+        }
+        else
+        {
+                temp = (*top)->next;
+                temp->n += (*top)->n;
+                _pop(top, line);
+        }
+}
 /**
  * _free - Function that frees elements of a stack
  * @top: First operand
