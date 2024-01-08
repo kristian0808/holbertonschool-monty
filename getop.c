@@ -1,19 +1,26 @@
 #include "monty.h"
-void (*get_op_code(char *token, __attribute__((unused))unsigned int line))(stack_t **, unsigned int)
+/**
+ * get_op - selects the correct function to perform the operation
+ * @token: The operator passed as an argument to the program
+ *
+ * Return: A pointer to the function that corresponds to the operator,
+ *         or NULL if no such function is found.
+ */
+void (*get_op(char *token))(stack_t **stack, unsigned int line_number)
 {
-	int i;
-	instruction_t operation[] = {
-		{"push", _push},
-		{"pop", _pop},
-		{"pint", _pint},
-		{"pall", _pall},
-		{"swap", _swap},
-		{"add", _add},
-		{NULL, NULL}
-	};
-	for (i = 0; operation[i].opcode != NULL; i++)
-		if (strcmp(token, operation[i].opcode) == 0)
-			return (operation[i].f);
-	invalid_instruction_error(token, line);
+	if (strcmp(token, "push") == 0)
+		return (_push);
+	else if (strcmp(token, "pall") == 0)
+		return (_pall);
+	else if (strcmp(token, "pint") == 0)
+		return (_pint);
+	else if (strcmp(token, "pop") == 0)
+		return (_pop);
+	else if (strcmp(token, "swap") == 0)
+		return (_swap);
+	else if (strcmp(token, "add") == 0)
+		return (_add);
+	else if (strcmp(token, "nop") == 0)
+		return (_nop);
 	return (NULL);
 }

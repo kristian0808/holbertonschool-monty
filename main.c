@@ -1,45 +1,93 @@
 #include "monty.h"
-int num;
-int main(int argc, char **argv)
-{
-	void (*p_func)(stack_t **, unsigned int);
-	ssize_t line;
-	FILE *fp;
-	char *buff = NULL, *token = NULL, command[1024];
-	size_t length = 0;
-	unsigned int counter = 1;
-	stack_t *top = NULL;
 
-	if (argc != 2)
-		usage_error();
-	fp = fopen(argv[1], "r");
-	if (fp == NULL)
-		file_error(argv);
-	while ((line = getline(&buff, &length, fp)) != -1)
+/**
+ * _push - pushes an element onto the stack
+ * @stack: A pointer to a pointer to the top of the stack
+ * @line_number: The current line number in the script
+ */
+void _push(stack_t **stack, unsigned int line_number)
+{
+	char *arig = strtok(NULL, " \t\n");
+
+	if (arig)
 	{
-		token = strtok(buff, " \n\t\r");
-		if (*token == '\0')
-			continue;
-		strcpy(command, token);
-		if (strcmp(token, "push") == 0)
+		int i = 0;
+
+		if (arig[0] == '-')
 		{
-			token = strtok(NULL, " \r\n\t");
-			if (token == NULL)
-				printf("Error");
-			num = atoi(token);
-			p_func = get_op_code(command, counter);
-			p_func(&top, counter);
+			i = 1;
 		}
-		else
+		while (arig[i] != '\0')
 		{
-			p_func = get_op_code(token, counter);
-			p_func(&top, counter);
+			if (!isdigit(arig[i]))
+			{
+				fprintf(stderr, "L%u: usage: push integer\n", line_number);
+				exit(EXIT_FAILURE);
+			}
+			i++;
 		}
-		counter++;
+		int value = atoi(arig);
+		stack_t *new_node = malloc(sizeof(stack_t));
+
+		if (!new_node)
+		{
+			fprintf(stderr, "Error: malloc failed\n");
+			exit(EXIT_FAILURE);
+		}
+		new_node->n = value;
+		new_node->prev = NULL;
+		new_node->next = *stack;
+		if (*stack)
+			(*stack)->prev = new_node;
+		*stack = new_node;
 	}
-	fclose(fp);
-	if (buff != NULL)
-		free(buff);
-	_free(top);
-	return (0);
+	else
+	{
+		fprintf(stderr, "L%u: usage: push integer\n", line_number);
+		exit(EXIT_FAILURE);
+	}
+}
+/**
+ * _pall - prints all the values on the stack, starting from the top
+ * @stack: A pointer to a pointer to the top of the stack
+ * @line_number: The current line number in the script
+ */
+void _pall(stack_t **stack, unsigned int line_number)
+{
+	(void)line_number;
+	stack_t *current = *stack;
+
+	while (current != NULL)
+	{
+		printf("%d\n", current->n);
+		current = current->next;
+	}
+}
+/**
+ * free_stack - frees all the elements of a stack_t stack
+ * @stack: A pointer to a pointer to the top of the stack
+ */
+void free_stack(stack_t **stack)
+{
+	while (*stack)
+	{
+		stack_t *temp = (*stack)->next;
+
+		free(*stack);
+		*stack = temp;
+	}
+}
+/**
+ * _pint - prints the value at the top of the stack
+ * @stack: A pointer to a pointer to the top of the stack
+ * @line_number: The current line number in the script
+ */
+void _pint(stack_t **stack, unsigned int line_number)
+{
+	if (*stack == NULL)
+	{
+		fprintf(stderr, "L%u: can't pint, stack empty\n", line_number);
+		exit(EXIT_FAILURE);
+	}
+	printf("%d\n", (*stack)->n);
 }
