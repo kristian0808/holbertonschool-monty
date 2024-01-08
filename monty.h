@@ -1,13 +1,13 @@
 #ifndef MONTY_H
 #define MONTY_H
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <ctype.h>
-
-extern int num;
-
+#include <sys/types.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <unistd.h>
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
@@ -23,7 +23,6 @@ typedef struct stack_s
         struct stack_s *prev;
         struct stack_s *next;
 } stack_t;
-
 /**
  * struct instruction_s - opcode and its function
  * @opcode: the opcode
@@ -37,8 +36,25 @@ typedef struct instruction_s
         char *opcode;
         void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
-
-void _push(stack_t **top, unsigned int line_number);
-void _pall(stack_t **top, unsigned int line_number);
-
+/* Define prototypes for stack function  */
+void _push(stack_t **top, unsigned int line);
+void _pall(stack_t **top, unsigned int line);
+void _pint(stack_t **top, unsigned int line);
+void _pop(stack_t **top, unsigned int line);
+void _free(stack_t *top);
+void _swap(stack_t **top, unsigned int line);
+void _add(stack_t **top, unsigned int line);
+void _sub(stack_t **top, unsigned int line);
+void _div(stack_t **top, unsigned int line);
+void _mul(stack_t **top, unsigned int line);
+void _mod(stack_t **top, unsigned int line);
+void _rotl(stack_t **top, unsigned int line);
+void _rotr(stack_t **top, unsigned int line);
+void _nop(stack_t **top, unsigned int line);
+void _pchar(stack_t **top, unsigned int line);
+void _pstr(stack_t **top, unsigned int line);
+void (*get_op_code(char *token, unsigned int line))(stack_t **, unsigned int);
+void invalid_instruction_error(char *token, unsigned int line);
+void file_error(char **argv);
+void usage_error(void);
 #endif
